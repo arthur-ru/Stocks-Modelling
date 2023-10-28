@@ -1,0 +1,6 @@
+BRK.B
+BF.B
+CEG
+GEHC
+KVUE
+VLTO
