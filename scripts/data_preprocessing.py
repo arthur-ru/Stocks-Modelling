@@ -1,24 +1,37 @@
 import pandas as pd
 import numpy as np
-from scipy import stats
 
 # Étape 1 : Charger les données depuis le fichier "data_stock.csv"
 data = pd.read_csv("data/raw_data/data_stock.csv")
 
-# Étape 2 : Extraire les valeurs de l'action "A" (deuxième colonne)
-ticker_A_data = data.iloc[:, 1]
+# Récupérer les noms des colonnes (à l'exception de la colonne des dates)
+column_names = data.columns[1:]  # Commencer depuis la deuxième colonne
 
-# Étape 3 : Calculer l'écart interquartile (IQR) des données de l'action "A"
-Q1 = np.percentile(ticker_A_data, 25)
-Q3 = np.percentile(ticker_A_data, 75)
-IQR = Q3 - Q1
+# Créer un dictionnaire pour stocker les outliers
+outliers_data = {}
 
-# Étape 4 : Calculer les limites supérieure et inférieure pour l'identification des outliers en utilisant la méthode IQR
-lower_limit = Q1 - 1.5 * IQR
-upper_limit = Q3 + 1.5 * IQR
+# Étape 2 : Itérer sur chaque colonne et identifier les outliers en utilisant la méthode IQR
+for column_name in column_names:
+    ticker_data = data[column_name]
+    Q1 = np.percentile(ticker_data, 25)
+    Q3 = np.percentile(ticker_data, 75)
+    IQR = Q3 - Q1
+    lower_limit = Q1 - 1.5 * IQR
+    upper_limit = Q3 + 1.5 * IQR
+    outliers_IQR = (ticker_data < lower_limit) | (ticker_data > upper_limit)
 
-# Étape 7 : Identifier et afficher les outliers en fonction des deux méthodes
-outliers_IQR = (ticker_A_data < lower_limit) | (ticker_A_data > upper_limit)
+    # Ajouter les outliers de cette colonne au dictionnaire
+    outliers_data[column_name] = ticker_data[outliers_IQR]
 
-print("Outliers identifiés avec la méthode IQR :")
-print(ticker_A_data[outliers_IQR])
+    # Afficher les outliers pour cette colonne
+    print(f"Outliers identifiés avec la méthode IQR pour {column_name}:")
+    print(ticker_data[outliers_IQR])
+
+# Créer un DataFrame à partir du dictionnaire des outliers
+outliers_df = pd.DataFrame(outliers_data)
+
+# Ajouter les autres colonnes du DataFrame original (y compris la colonne des dates)
+outliers_df = pd.concat([data.iloc[:, 0], outliers_df], axis=1)
+
+#Enregistrer les données dans un fichier CSV
+outliers_df.to_csv("data/raw_data/outliers.csv", index=False)
