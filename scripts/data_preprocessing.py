@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+
 # Étape 1 : Charger les données depuis le fichier "data_stock.csv"
 data = pd.read_csv("data/raw_data/data_stock.csv")
 
