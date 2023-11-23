@@ -23,7 +23,7 @@ class GRUNet(nn.Module):
         return out
 
 # Chemin du fichier CSV
-file_path = 'data/raw_data/data_stock.csv'
+file_path = '../data/raw_data/data_stock.csv'
 
 # Charger les données
 data = pd.read_csv(file_path)
@@ -44,7 +44,9 @@ class StockDataset(Dataset):
         return len(self.data) - self.window_size
 
     def __getitem__(self, idx):
-        return (self.data[idx:idx + self.window_size], self.data[idx + self.window_size])
+        seq = self.data[idx:idx + self.window_size]
+        label = self.data[idx + self.window_size]
+        return torch.tensor(seq, dtype=torch.float).unsqueeze(-1), torch.tensor(label, dtype=torch.float)
 
 # Définir la taille de la fenêtre pour la création des séquences
 window_size = 60  # Exemple : utiliser les prix des 60 derniers jours pour prédire le prix du lendemain
@@ -55,7 +57,11 @@ stock_dataset = StockDataset(aapl_data, window_size)
 # Créer le DataLoader
 train_loader = DataLoader(stock_dataset, batch_size=32, shuffle=False)  # Pas de mélange pour les séries temporelles
 
-print(train_loader)  # Affichage du DataLoader créé
+for batch in train_loader:
+    for data in batch:
+        for data2 in data:
+            print(data2)
+
 
 # Instanciation du modèle
 model = GRUNet(input_dim=1, hidden_dim=100, output_dim=1, num_layers=2)
@@ -73,3 +79,20 @@ num_epochs = 10
         # Propagation avant
         # Calcul de la perte
         # Propagation arrière et optimisation"""
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+for epoch in range(num_epochs):
+    for inputs, labels in train_loader:
+        inputs, labels = inputs.to(device), labels.to(device)
+
+        optimizer.zero_grad()
+
+        outputs = model(inputs)
+
+        loss = criterion(outputs, labels.unsqueeze(1))
+
+        loss.backward()
+
+        optimizer.step()
+
+    print(f"Epoch {epoch+1}/{num_epochs}, Loss: {loss.item()}")
