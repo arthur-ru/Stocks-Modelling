@@ -1,9 +1,9 @@
 from GoogleNews import GoogleNews
-
+from textblob import TextBlob
 # Initialisation
 googlenews = GoogleNews()
 googlenews.set_lang('fr')
-googlenews.set_period('7d')
+googlenews.set_period('14d')
 
 # Recherche
 googlenews.search('finance')
@@ -15,7 +15,11 @@ for news in result:
     print("Titre:", news['title'])
     print("Date:", news['date'])
     print("Description:", news['desc'])
-    print("Lien:", news['link'])
+    analysis = TextBlob(news['title'])
+    sentiment = analysis.sentiment.polarity
+    print("Sentiment:", sentiment)
 
+analysis = TextBlob("SHIT YOU FUCKING ASSHOLE")
+print("Sentiment:", analysis.sentiment.polarity)
 # Nettoyage
 googlenews.clear()
