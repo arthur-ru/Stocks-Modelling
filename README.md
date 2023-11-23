@@ -57,3 +57,39 @@ Si les performances ne sont pas satisfaisantes, envisagez de régler les hyperpa
 
 Déploiement :
 Une fois que vous êtes satisfait de la performance du modèle, vous pouvez le déployer pour effectuer des prédictions en temps réel.
+
+#Choix du Type de Modèle:
+Réseaux Neuronaux Profonds (DNN): Ils sont bien adaptés pour les tâches complexes comme la modélisation des séries temporelles.
+Réseaux Neuronaux Récurrents (RNN), LSTM, ou GRU: Ces architectures sont particulièrement efficaces pour traiter les séries temporelles, car elles prennent en compte la nature séquentielle des données.
+Architecture du Modèle:
+
+Couches Récurrentes: Utilisez des couches LSTM ou GRU pour capturer la dépendance temporelle dans les séries de prix.
+Couches Denses: Ajoutez des couches denses après les couches récurrentes pour la classification ou la régression finale.
+Regularisation: Intégrez des méthodes comme le Dropout pour éviter le surapprentissage.
+Prétraitement des Données:
+
+Normalisation/Standardisation: Assurez-vous que les données d'entrée sont normalisées ou standardisées pour une meilleure performance du modèle.
+Fenêtrage des Données: Créez des séquences temporelles ou des "fenêtres" de données pour la prédiction (par exemple, utiliser les données des 30 derniers jours pour prédire le prix du lendemain).
+Fonction d'Activation et de Perte:
+
+Fonctions d'Activation: Utilisez des fonctions comme ReLU pour les couches cachées.
+Fonction de Perte: Pour une tâche de régression, des fonctions comme l'erreur quadratique moyenne (MSE) sont couramment utilisées.
+Optimisation:
+
+Choix de l'Optimiseur: Des optimiseurs comme Adam sont efficaces pour de nombreux problèmes.
+Taux d'Apprentissage: Commencez avec un taux d'apprentissage standard et ajustez-le au besoin.
+Validation Croisée et Entraînement:
+
+Validation Croisée: Utilisez cette méthode pour une évaluation robuste de votre modèle.
+Entraînement Itératif: Entrainez le modèle sur l'ensemble d'entraînement et évaluez-le sur un ensemble de validation pour surveiller les performances et éviter le surapprentissage.
+Ajustements et Optimisation:
+
+Ajustements Basés sur les Performances: Selon les résultats obtenus, vous pourriez avoir besoin d'ajuster l'architecture du modèle, le taux d'apprentissage ou la régularisation.
+Enregistrement et Documentation:
+
+Sauvegarde du Modèle: Enregistrez le modèle après l'entraînement pour une utilisation ou un déploiement ultérieur.
+Documentation: Documentez tous les aspects du processus de modélisation, y compris les choix d'architecture, les paramètres du modèle et les résultats.
+
+# Types de neurones recommandés:
+le type de neurone le plus approprié serait probablement un neurone de type récurrent. En particulier, les GRU (Gated Recurrent Units)
+Si on a le temps, tester les LSTM
