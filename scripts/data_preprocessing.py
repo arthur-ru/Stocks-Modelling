@@ -1,17 +1,16 @@
 import pandas as pd
 import numpy as np
 
-
-# Étape 1 : Charger les données depuis le fichier "data_stock.csv"
+# Load data from the "data_stock.csv" CSV file
 data = pd.read_csv("data/raw_data/data_stock.csv")
 
-# Récupérer les noms des colonnes (à l'exception de la colonne des dates)
-column_names = data.columns[1:]  # Commencer depuis la deuxième colonne
+# Get the column names (except the date column)
+column_names = data.columns[1:]  # Start from the second column
 
-# Créer un dictionnaire pour stocker les outliers
+# Create a dictionary to store the outliers
 outliers_data = {}
 
-# Étape 2 : Itérer sur chaque colonne et identifier les outliers en utilisant la méthode IQR
+# Loop over each column and identify outliers using the IQR method
 for column_name in column_names:
     ticker_data = data[column_name]
     Q1 = np.percentile(ticker_data, 25)
@@ -21,18 +20,18 @@ for column_name in column_names:
     upper_limit = Q3 + 1.5 * IQR
     outliers_IQR = (ticker_data < lower_limit) | (ticker_data > upper_limit)
 
-    # Ajouter les outliers de cette colonne au dictionnaire
+    # Add outliers for this column to the dictionary
     outliers_data[column_name] = ticker_data[outliers_IQR]
 
-    # Afficher les outliers pour cette colonne
-    print(f"Outliers identifiés avec la méthode IQR pour {column_name}:")
+    # Print the outliers for this column
+    print(f"Outliers identified with the IQR method for {column_name}:")
     print(ticker_data[outliers_IQR])
 
-# Créer un DataFrame à partir du dictionnaire des outliers
+# Create a DataFrame from the outliers dictionary
 outliers_df = pd.DataFrame(outliers_data)
 
-# Ajouter les autres colonnes du DataFrame original (y compris la colonne des dates)
+# Add the other columns from the original DataFrame (including the date column)
 outliers_df = pd.concat([data.iloc[:, 0], outliers_df], axis=1)
 
-#Enregistrer les données dans un fichier CSV
+# Save the outliers to a CSV file
 outliers_df.to_csv("data/raw_data/outliers.csv", index=False)

@@ -73,26 +73,13 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 num_epochs = 10
 
 # Boucle d'entraînement (pseudo-code)
-"""for epoch in range(num_epochs):
-    for batch in train_loader:
-        # Obtention des données et des étiquettes
-        # Propagation avant
-        # Calcul de la perte
-        # Propagation arrière et optimisation"""
-
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 for epoch in range(num_epochs):
     for inputs, labels in train_loader:
         inputs, labels = inputs.to(device), labels.to(device)
-
         optimizer.zero_grad()
-
         outputs = model(inputs)
-
         loss = criterion(outputs, labels.unsqueeze(1))
-
         loss.backward()
-
         optimizer.step()
-
     print(f"Epoch {epoch+1}/{num_epochs}, Loss: {loss.item()}")
