@@ -24,17 +24,19 @@ class GRUNet(nn.Module):
         return out
 
 # Path to the CSV file
-file_path = '../data/raw_data/data_stock.csv'
+file_path = './data/raw_data/data_stock.csv'
 
 # Load data from the "data_stock.csv" CSV file
 data = pd.read_csv(file_path)
 
 # Select the 'AAPL' ticker (4th column) : 
 # **TODO** : automatize this step for all tickers
-aapl_data = data.iloc[:, 3]
+current_stock_data = data.iloc[:252, 3]
+test_stock_data = data.iloc[252:, 3]
 
 # Convert to numpy array for easier processing
-aapl_data = aapl_data.to_numpy()
+current_stock_data = current_stock_data.to_numpy()
+test_stock_data = test_stock_data.to_numpy()
 
 class StockDataset(Dataset):
     """ Personnalised dataset for stock prices """
@@ -54,14 +56,10 @@ class StockDataset(Dataset):
 window_size = 60 # Example: use the last 60 days to predict the price of the next day
 
 # Creation of the dataset and the dataloader
-stock_dataset = StockDataset(aapl_data, window_size)
+stock_dataset = StockDataset(current_stock_data, window_size)
+stock_test_dataset = StockDataset(test_stock_data, window_size)
 train_loader = DataLoader(stock_dataset, batch_size=32, shuffle=False)  # No need to shuffle for time series
-
-# Example of data extraction
-for batch in train_loader:
-    for data in batch:
-        for data2 in data:
-            print(data2)
+test_loader = DataLoader(stock_test_dataset, batch_size=1, shuffle=False)
 
 # Instanciation of the model
 model = GRUNet(input_dim=1, hidden_dim=100, output_dim=1, num_layers=2)
@@ -71,7 +69,7 @@ criterion = nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
 # Number of epochs
-num_epochs = 10
+num_epochs = 20
 
 # Training loop
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -84,3 +82,34 @@ for epoch in range(num_epochs):
         loss.backward()
         optimizer.step()
     print(f"Epoch {epoch+1}/{num_epochs}, Loss: {loss.item()}")
+
+# Save the model
+torch.save(model.state_dict(), "models/model.pth")
+
+# Après la boucle d'entraînement
+model.eval()  # Passer en mode évaluation
+total_loss = 0
+total_correct = 0
+total_samples = 0
+
+with torch.no_grad():  # Pas de calcul de gradient
+    for inputs, labels in test_loader:
+        inputs, labels = inputs.to(device), labels.to(device)
+        outputs = model(inputs)
+
+        # Calculer la perte
+        loss = criterion(outputs, labels)
+        total_loss += loss.item()
+
+        # Calculer le nombre de prédictions correctes
+        _, predicted = torch.max(outputs.data, 1)
+        total_correct += (predicted == labels).sum().item()
+        total_samples += labels.size(0)
+
+# Calculer la perte moyenne et la précision
+average_loss = total_loss / len(test_loader)
+accuracy = total_correct / total_samples
+print(f'Perte moyenne: {average_loss:.4f}, Précision: {accuracy:.4f}')
+
+# Sauvegarde du modèle
+torch.save(model.state_dict(), 'models/model.pth')

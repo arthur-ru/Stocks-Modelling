@@ -7,7 +7,7 @@ sp500_symbols = pd.read_html("https://en.wikipedia.org/wiki/List_of_S%26P_500_co
 
 # Historical data period
 start_date = "2018-01-01"
-end_date = "2019-01-01"
+end_date = "2020-01-01"
 
 # Lists to store valid and empty symbols (meaning no data was available)
 valid_symbols = []
