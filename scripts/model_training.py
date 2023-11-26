@@ -3,6 +3,14 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
+import yaml
+
+# Load the configuration file
+with open('config/config.yaml', 'r') as file:
+    config = yaml.safe_load(file)
+
+learning_rate = config['learning_rate']
+batch_size = config['batch_size']
 
 # Creating a GRU Network
 class GRUNet(nn.Module):
@@ -29,9 +37,19 @@ file_path = './data/raw_data/data_stock.csv'
 # Load data from the "data_stock.csv" CSV file
 data = pd.read_csv(file_path)
 
-# Select the 'AAPL' ticker (4th column) : 
-# **TODO** : automatize this step for all tickers
-current_stock_data = data.iloc[:252, 3]
+# Choose the stock to train by giving the ticker you want
+input_value = "MSFT"
+def get_index(data, input_value):
+    for index, value in enumerate(data):
+        if input_value == value:
+            return index
+    return -1
+
+# Trouver l'index de la colonne correspondant au ticker
+index = get_index(data.columns, input_value)
+# We take 80% of the data for training and 20% for testing
+training_row_index = int((len(data.iloc[:,index]))*0.8)
+current_stock_data = data.iloc[:training_row_index, index]
 
 # Convert to numpy array for easier processing
 current_stock_data = current_stock_data.to_numpy()
@@ -55,17 +73,17 @@ window_size = 60 # Example: use the last 60 days to predict the price of the nex
 
 # Creation of the dataset and the dataloader
 stock_dataset = StockDataset(current_stock_data, window_size)
-train_loader = DataLoader(stock_dataset, batch_size=32, shuffle=False)  # No need to shuffle for time series
+train_loader = DataLoader(stock_dataset, batch_size=batch_size, shuffle=False)  # No need to shuffle for time series
 
 # Instanciation of the model
 model = GRUNet(input_dim=1, hidden_dim=100, output_dim=1, num_layers=2)
 
 # Loss and optimizer
 criterion = nn.MSELoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 # Number of epochs, 93 is the ideal number of epochs for the training
-num_epochs = 93
+num_epochs = config['num_epochs']
 
 # Training loop
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -80,4 +98,4 @@ for epoch in range(num_epochs):
     print(f"Epoch {epoch+1}/{num_epochs}, Loss: {loss.item()}")
 
 # Save the model
-torch.save(model.state_dict(), "models/model.pth")
+torch.save(model.state_dict(), "models/model_"+ str(input_value) +".pth")

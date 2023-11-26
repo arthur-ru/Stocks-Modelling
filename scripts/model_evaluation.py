@@ -4,9 +4,9 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
 
-from model_training import data, model, StockDataset, window_size, device, criterion
+from model_training import data, model, StockDataset, window_size, device, criterion, training_row_index, index
 
-test_stock_data = data.iloc[252:, 3]
+test_stock_data = data.iloc[training_row_index:, index]
 test_stock_data = test_stock_data.to_numpy()
 
 stock_test_dataset = StockDataset(test_stock_data, window_size)
