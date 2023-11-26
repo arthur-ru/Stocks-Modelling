@@ -25,7 +25,7 @@ for news in result:
     sentiment = analysis.sentiment.polarity
     print("Sentiment:", sentiment)
 
-analysis = TextBlob("SHIT YOU FUCKING ASSHOLE")
+analysis = TextBlob("Happy, Positive")
 print("Sentiment:", analysis.sentiment.polarity)
 
 googlenews.clear()

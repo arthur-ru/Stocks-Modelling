@@ -32,11 +32,9 @@ data = pd.read_csv(file_path)
 # Select the 'AAPL' ticker (4th column) : 
 # **TODO** : automatize this step for all tickers
 current_stock_data = data.iloc[:252, 3]
-test_stock_data = data.iloc[252:, 3]
 
 # Convert to numpy array for easier processing
 current_stock_data = current_stock_data.to_numpy()
-test_stock_data = test_stock_data.to_numpy()
 
 class StockDataset(Dataset):
     """ Personnalised dataset for stock prices """
@@ -57,9 +55,7 @@ window_size = 60 # Example: use the last 60 days to predict the price of the nex
 
 # Creation of the dataset and the dataloader
 stock_dataset = StockDataset(current_stock_data, window_size)
-stock_test_dataset = StockDataset(test_stock_data, window_size)
 train_loader = DataLoader(stock_dataset, batch_size=32, shuffle=False)  # No need to shuffle for time series
-test_loader = DataLoader(stock_test_dataset, batch_size=1, shuffle=False)
 
 # Instanciation of the model
 model = GRUNet(input_dim=1, hidden_dim=100, output_dim=1, num_layers=2)
@@ -68,7 +64,7 @@ model = GRUNet(input_dim=1, hidden_dim=100, output_dim=1, num_layers=2)
 criterion = nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
-# Number of epochs
+# Number of epochs, 93 is the ideal number of epochs for the training
 num_epochs = 93
 
 # Training loop
