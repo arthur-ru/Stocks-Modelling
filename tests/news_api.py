@@ -1,14 +1,20 @@
+# Code test to get the sentiment of a financial news article
+# Using the GoogleNews API
+# Work in progress
+
 from GoogleNews import GoogleNews
 from textblob import TextBlob
+
 # Initialisation
 googlenews = GoogleNews()
 googlenews.set_lang('fr')
 googlenews.set_period('14d')
 
-# Recherche
+# Keyword search
 googlenews.search('finance')
 
 # Récupération des résultats
+# Getting the results
 result = googlenews.result()
 for news in result:
     print("-" * 50)
@@ -21,5 +27,5 @@ for news in result:
 
 analysis = TextBlob("SHIT YOU FUCKING ASSHOLE")
 print("Sentiment:", analysis.sentiment.polarity)
-# Nettoyage
+
 googlenews.clear()
