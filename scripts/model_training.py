@@ -37,7 +37,7 @@ file_path = './data/raw_data/data_stock.csv'
 # Load data from the "data_stock.csv" CSV file
 data = pd.read_csv(file_path)
 
-# Choose the stock to train by giving the ticker you want
+# Choose the stock to train by giving the ticker you want in input_value
 input_value = "MSFT"
 def get_index(data, input_value):
     for index, value in enumerate(data):
@@ -45,7 +45,7 @@ def get_index(data, input_value):
             return index
     return -1
 
-# Trouver l'index de la colonne correspondant au ticker
+# Find the index of the column corresponding to the ticker
 index = get_index(data.columns, input_value)
 # We take 80% of the data for training and 20% for testing
 training_row_index = int((len(data.iloc[:,index]))*0.8)
