@@ -32,4 +32,4 @@ with torch.no_grad():  # No need to track the gradients
 
 # Calculate the average loss
 average_loss = total_loss / total_samples
-print(f'Perte moyenne: {average_loss:.4f}')
+print(f'Average loss: {average_loss:.4f}')
