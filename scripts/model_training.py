@@ -76,7 +76,7 @@ stock_dataset = StockDataset(current_stock_data, window_size)
 train_loader = DataLoader(stock_dataset, batch_size=batch_size, shuffle=False)  # No need to shuffle for time series
 
 # Instanciation of the model
-model = GRUNet(input_dim=1, hidden_dim=100, output_dim=1, num_layers=2)
+model = GRUNet(input_dim=1, hidden_dim=config['hidden_dim'], output_dim=1, num_layers=config['num_layers'])
 
 # Loss and optimizer
 criterion = nn.MSELoss()
